@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio / Rider / VS Code
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+.vscode/
+
+# Test and coverage output
+TestResults/
+*.coverage
+*.coveragexml
+
+# Logs and diagnostics
+*.log
+*.tmp
+*.cache
+
+# NuGet
+*.nupkg
+packages/
+
+# OS files
+Thumbs.db
+Desktop.ini
