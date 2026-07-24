@@ -6,6 +6,7 @@
         xmlns:models="clr-namespace:PublisherRip.App.Models"
         mc:Ignorable="d"
         Title="Publisher RIP"
+        Icon="Assets/PublisherRip.ico"
         Width="420"
         Height="640"
         MinWidth="380"
