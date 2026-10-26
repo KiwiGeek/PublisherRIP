@@ -39,7 +39,16 @@ internal sealed class PrintPagePaginator : DocumentPaginator
         using var drawingContext = visual.RenderOpen();
         drawingContext.DrawRectangle(Brushes.White, null, new Rect(new Point(0, 0), _pageSize));
 
-        var bitmap = PageBitmapFactory.CreatePrintableBitmap(pageItem.Source, pageItem.PageIndex, pageItem.IsPdf, _contentRect.Size);
+        var targetSize = pageItem.RotationAngle % 180 == 0
+            ? _contentRect.Size
+            : new Size(_contentRect.Height, _contentRect.Width);
+        var bitmap = PageBitmapFactory.CreatePrintableBitmap(pageItem.Source, pageItem.PageIndex, pageItem.IsPdf, targetSize);
+        if (pageItem.RotationAngle != 0)
+        {
+            bitmap = new TransformedBitmap(bitmap, new RotateTransform(pageItem.RotationAngle));
+            bitmap.Freeze();
+        }
+
         var drawRect = CalculateFitRect(bitmap, _contentRect);
         drawingContext.DrawImage(bitmap, drawRect);
 

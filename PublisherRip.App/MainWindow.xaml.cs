@@ -56,6 +56,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     public bool CanPrint => !IsBusy && HasPages;
 
+    public bool CanRotate => !IsBusy && HasSelection;
+
     public string PageCountLabel => Pages.Count == 1 ? "1 page queued" : $"{Pages.Count} pages queued";
 
     private bool IsBusy
@@ -173,6 +175,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         RefreshUiState();
     }
 
+    private void RotateLeftClicked(object sender, RoutedEventArgs e) => RotateSelectedPage(clockwise: false);
+
+    private void RotateRightClicked(object sender, RoutedEventArgs e) => RotateSelectedPage(clockwise: true);
+
+    private void RotateSelectedPage(bool clockwise)
+    {
+        if (!CanRotate || SelectedPage is null)
+        {
+            return;
+        }
+
+        SelectedPage.Rotate(clockwise);
+        StatusText = $"Rotated {SelectedPage.DisplayName} 90\u00b0 {(clockwise ? "right" : "left")}.";
+    }
+
     private void RemoveClicked(object sender, RoutedEventArgs e)
     {
         if (SelectedPage is null)
@@ -277,6 +294,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         OnPropertyChanged(nameof(CanMoveUp));
         OnPropertyChanged(nameof(CanMoveDown));
         OnPropertyChanged(nameof(CanPrint));
+        OnPropertyChanged(nameof(CanRotate));
         OnPropertyChanged(nameof(PageCountLabel));
     }
 

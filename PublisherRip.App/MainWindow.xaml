@@ -26,6 +26,14 @@
         <SolidColorBrush x:Key="TextBrush" Color="#FF2D2118" />
         <SolidColorBrush x:Key="MutedTextBrush" Color="#FF6C5847" />
 
+        <Style x:Key="ActionIconStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,7,0" />
+        </Style>
+
         <Style TargetType="Button">
             <Setter Property="Margin" Value="0,0,8,8" />
             <Setter Property="Padding" Value="12,8" />
@@ -105,6 +113,12 @@
                 Padding="18"
                 Margin="0,0,0,12">
             <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="&#xE898;"
+                           Style="{StaticResource ActionIconStyle}"
+                           FontSize="28"
+                           Margin="0,0,0,8"
+                           HorizontalAlignment="Center"
+                           Foreground="{StaticResource AccentBrushDark}" />
                 <TextBlock Text="Drop Zone"
                            FontSize="18"
                            FontWeight="SemiBold"
@@ -135,7 +149,11 @@
                                     Margin="0,0,12,0">
                                 <Image Source="{Binding Preview}"
                                        Stretch="Uniform"
-                                       Margin="6" />
+                                       Margin="6">
+                                    <Image.LayoutTransform>
+                                        <RotateTransform Angle="{Binding RotationAngle}" />
+                                    </Image.LayoutTransform>
+                                </Image>
                             </Border>
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="{Binding DisplayName}"
@@ -169,22 +187,69 @@
         </Grid>
 
         <WrapPanel Grid.Row="3" Margin="0,12,0,4">
-            <Button Content="Move Up"
-                    Click="MoveUpClicked"
-                    IsEnabled="{Binding CanMoveUp}" />
-            <Button Content="Move Down"
-                    Click="MoveDownClicked"
-                    IsEnabled="{Binding CanMoveDown}" />
-            <Button Content="Remove"
-                    Click="RemoveClicked"
-                    IsEnabled="{Binding HasSelection}" />
-            <Button Content="Clear All"
-                    Click="ClearAllClicked"
-                    IsEnabled="{Binding HasPages}" />
-            <Button Content="Print"
-                    Click="PrintClicked"
+            <Button Click="RotateLeftClicked"
+                    IsEnabled="{Binding CanRotate}"
+                    ToolTip="Rotate selected page 90&#xB0; counterclockwise"
+                    AutomationProperties.Name="Rotate selected page left">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE7AD;" Style="{StaticResource ActionIconStyle}" />
+                    <TextBlock Text="Rotate Left" />
+                </StackPanel>
+            </Button>
+            <Button Click="RotateRightClicked"
+                    IsEnabled="{Binding CanRotate}"
+                    ToolTip="Rotate selected page 90&#xB0; clockwise"
+                    AutomationProperties.Name="Rotate selected page right">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE7AD;" Style="{StaticResource ActionIconStyle}">
+                        <TextBlock.LayoutTransform>
+                            <ScaleTransform ScaleX="-1" />
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>
+                    <TextBlock Text="Rotate Right" />
+                </StackPanel>
+            </Button>
+            <Button Click="MoveUpClicked"
+                    IsEnabled="{Binding CanMoveUp}"
+                    AutomationProperties.Name="Move selected page up">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE74A;" Style="{StaticResource ActionIconStyle}" />
+                    <TextBlock Text="Move Up" />
+                </StackPanel>
+            </Button>
+            <Button Click="MoveDownClicked"
+                    IsEnabled="{Binding CanMoveDown}"
+                    AutomationProperties.Name="Move selected page down">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE74B;" Style="{StaticResource ActionIconStyle}" />
+                    <TextBlock Text="Move Down" />
+                </StackPanel>
+            </Button>
+            <Button Click="RemoveClicked"
+                    IsEnabled="{Binding HasSelection}"
+                    AutomationProperties.Name="Remove selected page">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE74D;" Style="{StaticResource ActionIconStyle}" />
+                    <TextBlock Text="Remove" />
+                </StackPanel>
+            </Button>
+            <Button Click="ClearAllClicked"
+                    IsEnabled="{Binding HasPages}"
+                    AutomationProperties.Name="Clear all pages">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE8E6;" Style="{StaticResource ActionIconStyle}" />
+                    <TextBlock Text="Clear All" />
+                </StackPanel>
+            </Button>
+            <Button Click="PrintClicked"
                     IsEnabled="{Binding CanPrint}"
-                    Style="{StaticResource AccentButtonStyle}" />
+                    Style="{StaticResource AccentButtonStyle}"
+                    AutomationProperties.Name="Print queued pages">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE749;" Style="{StaticResource ActionIconStyle}" />
+                    <TextBlock Text="Print" />
+                </StackPanel>
+            </Button>
         </WrapPanel>
 
         <DockPanel Grid.Row="4" Margin="0,4,0,0">

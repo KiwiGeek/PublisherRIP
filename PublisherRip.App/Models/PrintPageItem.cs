@@ -1,10 +1,13 @@
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Media.Imaging;
 
 namespace PublisherRip.App.Models;
 
-public sealed class PrintPageItem
+public sealed class PrintPageItem : INotifyPropertyChanged
 {
+    private int _rotationAngle;
+
     public PrintPageItem(DocumentSource source, int pageIndex, int pageCount, BitmapSource preview, bool isPdf)
     {
         Source = source;
@@ -26,6 +29,16 @@ public sealed class PrintPageItem
     public int PageCount { get; }
 
     public BitmapSource Preview { get; }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public int RotationAngle => _rotationAngle;
+
+    public void Rotate(bool clockwise)
+    {
+        _rotationAngle = (_rotationAngle + (clockwise ? 90 : 270)) % 360;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RotationAngle)));
+    }
 
     public bool IsPdf { get; }
 

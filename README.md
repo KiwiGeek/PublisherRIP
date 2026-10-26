@@ -42,3 +42,4 @@ If you skipped all of those, you can still launch it directly from:
 - The app stays in a small always-on-top window for quick drag-and-drop use.
 - Paper size, orientation, printer selection, and similar settings come from the normal Windows print dialog.
 - Images and PDF pages are scaled to fit the printer's printable area while preserving aspect ratio.
+- Select a queued page and use Rotate Left or Rotate Right to turn it 90 degrees. Rotation applies to the preview and printed page without changing the original file.
