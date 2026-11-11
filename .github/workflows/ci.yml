@@ -34,14 +34,14 @@ jobs:
         run: >
           dotnet publish PublisherRip.App/PublisherRip.App.csproj
           -c Release -r win-x64 --self-contained
-          -p:Version=0.0.0-ci.${{ github.run_number }}
+          -p:Version=0.0.1-ci.${{ github.run_number }}
           -o publish --nologo
 
       - name: Pack (unsigned)
         run: >
           vpk pack
           --packId PublisherRip
-          --packVersion 0.0.0-ci.${{ github.run_number }}
+          --packVersion 0.0.1-ci.${{ github.run_number }}
           --packTitle 'Publisher RIP'
           --packAuthors 'Joshua Penman'
           --packDir publish
