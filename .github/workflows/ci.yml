@@ -1,0 +1,57 @@
+name: CI
+
+# Build and package (unsigned) on every push and PR, so packaging problems
+# show up before a release tag is pushed.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  VPK_VERSION: 1.2.161
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install vpk
+        run: dotnet tool install -g vpk --version $env:VPK_VERSION
+
+      - name: Publish app
+        run: >
+          dotnet publish PublisherRip.App/PublisherRip.App.csproj
+          -c Release -r win-x64 --self-contained
+          -p:Version=0.0.0-ci.${{ github.run_number }}
+          -o publish --nologo
+
+      - name: Pack (unsigned)
+        run: >
+          vpk pack
+          --packId PublisherRip
+          --packVersion 0.0.0-ci.${{ github.run_number }}
+          --packTitle 'Publisher RIP'
+          --packAuthors 'Joshua Penman'
+          --packDir publish
+          --mainExe PublisherRip.App.exe
+          --icon PublisherRip.App/Assets/PublisherRip.ico
+          --shortcuts ""
+          --outputDir releases
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: PublisherRip-Setup-unsigned
+          path: releases/PublisherRip-win-Setup.exe
+          retention-days: 7
