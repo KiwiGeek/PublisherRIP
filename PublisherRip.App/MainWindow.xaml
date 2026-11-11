@@ -90,9 +90,21 @@
                     <TextBlock Text="&#xE713;" Style="{StaticResource ActionIconStyle}" Margin="0" Foreground="{StaticResource MutedTextBrush}" />
                     <Button.ContextMenu>
                         <ContextMenu>
+                            <MenuItem x:Name="RestartToUpdateMenuItem"
+                                      Header="Restart to update"
+                                      FontWeight="SemiBold"
+                                      Visibility="Collapsed"
+                                      Click="RestartToUpdateClicked" />
+                            <MenuItem x:Name="CheckForUpdatesMenuItem"
+                                      Header="Check for updates"
+                                      Click="CheckForUpdatesClicked" />
                             <MenuItem x:Name="InstallOptionsMenuItem"
                                       Header="Shortcuts and command-line launcher…"
                                       Click="InstallOptionsClicked" />
+                            <Separator />
+                            <MenuItem x:Name="VersionMenuItem"
+                                      Header="Development build"
+                                      IsEnabled="False" />
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>

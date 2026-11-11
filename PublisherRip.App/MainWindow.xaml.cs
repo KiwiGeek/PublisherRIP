@@ -31,10 +31,23 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             ToolTipService.SetShowOnDisabled(InstallOptionsMenuItem, true);
         }
 
+        _updateService = UpdateService.TryCreateForInstalledApp();
+        if (_updateService is null)
+        {
+            CheckForUpdatesMenuItem.IsEnabled = false;
+            CheckForUpdatesMenuItem.ToolTip = "Available once Publisher RIP is installed.";
+            ToolTipService.SetShowOnDisabled(CheckForUpdatesMenuItem, true);
+        }
+        else
+        {
+            VersionMenuItem.Header = $"Version {_updateService.CurrentVersion}";
+        }
+
         ContentRendered += HandleFirstContentRendered;
     }
 
     private readonly InstallOptionsService? _installOptionsService;
+    private readonly UpdateService? _updateService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -299,6 +312,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         ContentRendered -= HandleFirstContentRendered;
 
+        // Fire and forget; failures (offline, rate limits) are silent for background checks.
+        _ = CheckForUpdatesAsync(userInitiated: false);
+
         if (!Program.IsFirstRun || _installOptionsService is null)
         {
             return;
@@ -324,6 +340,60 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     }
 
     private void InstallOptionsClicked(object sender, RoutedEventArgs e) => ShowInstallOptions(isFirstRun: false);
+
+    private async void CheckForUpdatesClicked(object sender, RoutedEventArgs e) =>
+        await CheckForUpdatesAsync(userInitiated: true);
+
+    private void RestartToUpdateClicked(object sender, RoutedEventArgs e)
+    {
+        if (HasPages && MessageBox.Show(
+                this,
+                "Restarting will clear the pages in your print queue. Restart and update now?",
+                "Restart to update",
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Question) != MessageBoxResult.OK)
+        {
+            return;
+        }
+
+        _updateService?.RestartToApply();
+    }
+
+    private async Task CheckForUpdatesAsync(bool userInitiated)
+    {
+        if (_updateService is null)
+        {
+            return;
+        }
+
+        CheckForUpdatesMenuItem.IsEnabled = false;
+        CheckForUpdatesMenuItem.Header = "Checking for updates…";
+        try
+        {
+            var result = await _updateService.CheckAndDownloadAsync();
+            switch (result.Outcome)
+            {
+                case UpdateCheckOutcome.UpdateReady:
+                    RestartToUpdateMenuItem.Header = $"Restart to update to {result.Version}";
+                    RestartToUpdateMenuItem.Visibility = Visibility.Visible;
+                    StatusText = $"Update {result.Version} is ready. Use the settings button to restart, or it will install next time you open Publisher RIP.";
+                    break;
+
+                case UpdateCheckOutcome.UpToDate when userInitiated:
+                    MessageBox.Show(this, $"You're on the latest version ({_updateService.CurrentVersion}).", "No updates", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+
+                case UpdateCheckOutcome.Failed when userInitiated:
+                    MessageBox.Show(this, $"I couldn't check for updates.\n\n{result.Error}", "Update check failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    break;
+            }
+        }
+        finally
+        {
+            CheckForUpdatesMenuItem.Header = "Check for updates";
+            CheckForUpdatesMenuItem.IsEnabled = true;
+        }
+    }
 
     private void ShowInstallOptions(bool isFirstRun)
     {
