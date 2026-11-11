@@ -3,38 +3,73 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <ResourceDictionary>
+            <!-- The app palette. ThemeService swaps this for Themes/Dark.xaml (and back) at runtime,
+                 so brushes must be referenced with DynamicResource. -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Light.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFF7F3EE" />
-        <SolidColorBrush x:Key="PanelBrush" Color="#FFFFFCF8" />
-        <SolidColorBrush x:Key="BorderBrushStrong" Color="#FFD6B48A" />
-        <SolidColorBrush x:Key="AccentBrush" Color="#FFC65D1A" />
-        <SolidColorBrush x:Key="AccentBrushDark" Color="#FF8C3B0B" />
-        <SolidColorBrush x:Key="TextBrush" Color="#FF2D2118" />
-        <SolidColorBrush x:Key="MutedTextBrush" Color="#FF6C5847" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-        <Style x:Key="ActionIconStyle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0,0,7,0" />
-        </Style>
+            <Style x:Key="ActionIconStyle" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="0,0,7,0" />
+            </Style>
 
-        <Style TargetType="Button">
-            <Setter Property="Margin" Value="0,0,8,8" />
-            <Setter Property="Padding" Value="12,8" />
-            <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushStrong}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
+            <!-- Own template so buttons look the same in light and dark (Fluent's template would
+                 substitute its own hover/disabled colours). Hover/pressed tint an overlay, so the
+                 same template works for normal and accent buttons. -->
+            <Style TargetType="Button">
+                <Setter Property="Margin" Value="0,0,8,8" />
+                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushStrong}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid x:Name="Root" SnapsToDevicePixels="True">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="8" />
+                                <Border x:Name="Overlay" Background="Transparent" CornerRadius="8" />
+                                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  RecognizesAccessKey="True" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Overlay" Property="Background" Value="{DynamicResource ButtonHoverOverlayBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="Overlay" Property="Background" Value="{DynamicResource ButtonPressedOverlayBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Root" Property="Opacity" Value="0.45" />
+                                    <Setter Property="Cursor" Value="Arrow" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-        <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrushDark}" />
-        </Style>
+            <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBorderBrush}" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
