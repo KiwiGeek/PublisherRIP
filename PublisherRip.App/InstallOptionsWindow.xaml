@@ -9,18 +9,18 @@
         ShowInTaskbar="False"
         Topmost="True"
         WindowStartupLocation="CenterOwner"
-        Background="{StaticResource WindowBackgroundBrush}">
+        Background="{DynamicResource WindowBackgroundBrush}">
     <Window.Resources>
         <Style TargetType="CheckBox">
             <Setter Property="Margin" Value="0,0,0,12" />
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
             <Setter Property="VerticalContentAlignment" Value="Top" />
         </Style>
     </Window.Resources>
 
     <StackPanel Margin="16">
-        <Border Background="{StaticResource PanelBrush}"
-                BorderBrush="{StaticResource BorderBrushStrong}"
+        <Border Background="{DynamicResource PanelBrush}"
+                BorderBrush="{DynamicResource BorderBrushStrong}"
                 BorderThickness="1"
                 CornerRadius="18"
                 Padding="16"
@@ -30,11 +30,11 @@
                            Text="Set up Publisher RIP"
                            FontSize="20"
                            FontWeight="Bold"
-                           Foreground="{StaticResource TextBrush}" />
+                           Foreground="{DynamicResource TextBrush}" />
                 <TextBlock x:Name="IntroText"
                            Margin="0,6,0,16"
                            TextWrapping="Wrap"
-                           Foreground="{StaticResource MutedTextBrush}"
+                           Foreground="{DynamicResource MutedTextBrush}"
                            Text="Choose how you'd like to launch Publisher RIP. You can change these later from the settings button." />
 
                 <CheckBox x:Name="DesktopShortcutCheckBox">
@@ -52,7 +52,7 @@
                                    Margin="0,2,0,0"
                                    TextWrapping="Wrap"
                                    FontSize="11"
-                                   Foreground="{StaticResource MutedTextBrush}" />
+                                   Foreground="{DynamicResource MutedTextBrush}" />
                     </StackPanel>
                 </CheckBox>
             </StackPanel>

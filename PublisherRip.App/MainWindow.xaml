@@ -11,7 +11,7 @@
         Height="640"
         MinWidth="380"
         MinHeight="460"
-        Background="{StaticResource WindowBackgroundBrush}"
+        Background="{DynamicResource WindowBackgroundBrush}"
         Topmost="True"
         WindowStartupLocation="CenterScreen"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -29,15 +29,15 @@
                         <Border x:Name="ItemBorder"
                                 CornerRadius="12"
                                 BorderThickness="1"
-                                BorderBrush="{StaticResource BorderBrushStrong}"
-                                Background="{StaticResource PanelBrush}"
+                                BorderBrush="{DynamicResource BorderBrushStrong}"
+                                Background="{DynamicResource PanelBrush}"
                                 Padding="10">
                             <ContentPresenter />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="#FFFCE7D2" />
-                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource HighlightBrush}" />
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -56,8 +56,8 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
-                Background="{StaticResource PanelBrush}"
-                BorderBrush="{StaticResource BorderBrushStrong}"
+                Background="{DynamicResource PanelBrush}"
+                BorderBrush="{DynamicResource BorderBrushStrong}"
                 BorderThickness="1"
                 CornerRadius="18"
                 Padding="16"
@@ -71,11 +71,11 @@
                     <TextBlock Text="Publisher RIP"
                                FontSize="24"
                                FontWeight="Bold"
-                               Foreground="{StaticResource TextBrush}" />
+                               Foreground="{DynamicResource TextBrush}" />
                     <TextBlock Text="Drop images, PDFs, or Outlook attachments here. The window stays on top so you can fling pages into it fast."
                                Margin="0,6,0,0"
                                TextWrapping="Wrap"
-                               Foreground="{StaticResource MutedTextBrush}" />
+                               Foreground="{DynamicResource MutedTextBrush}" />
                 </StackPanel>
                 <Button x:Name="SettingsButton"
                         Grid.Column="1"
@@ -87,7 +87,7 @@
                         BorderThickness="0"
                         ToolTip="Settings"
                         AutomationProperties.Name="Settings">
-                    <TextBlock Text="&#xE713;" Style="{StaticResource ActionIconStyle}" Margin="0" Foreground="{StaticResource MutedTextBrush}" />
+                    <TextBlock Text="&#xE713;" Style="{StaticResource ActionIconStyle}" Margin="0" Foreground="{DynamicResource MutedTextBrush}" />
                     <Button.ContextMenu>
                         <ContextMenu>
                             <MenuItem x:Name="RestartToUpdateMenuItem"
@@ -112,8 +112,8 @@
         </Border>
 
         <Border Grid.Row="1"
-                Background="#FFFCE7D2"
-                BorderBrush="{StaticResource AccentBrush}"
+                Background="{DynamicResource HighlightBrush}"
+                BorderBrush="{DynamicResource AccentBrush}"
                 BorderThickness="2"
                 CornerRadius="18"
                 Padding="18"
@@ -124,16 +124,16 @@
                            FontSize="28"
                            Margin="0,0,0,8"
                            HorizontalAlignment="Center"
-                           Foreground="{StaticResource AccentBrushDark}" />
+                           Foreground="{DynamicResource AccentTextBrush}" />
                 <TextBlock Text="Drop Zone"
                            FontSize="18"
                            FontWeight="SemiBold"
                            HorizontalAlignment="Center"
-                           Foreground="{StaticResource AccentBrushDark}" />
+                           Foreground="{DynamicResource AccentTextBrush}" />
                 <TextBlock Text="Drag files anywhere into this window."
                            Margin="0,4,0,0"
                            HorizontalAlignment="Center"
-                           Foreground="{StaticResource MutedTextBrush}" />
+                           Foreground="{DynamicResource MutedTextBrush}" />
             </StackPanel>
         </Border>
 
@@ -149,8 +149,8 @@
                             <Border Width="74"
                                     Height="98"
                                     CornerRadius="10"
-                                    Background="#FFF2E6D7"
-                                    BorderBrush="#FFE2C8A9"
+                                    Background="{DynamicResource ThumbnailBrush}"
+                                    BorderBrush="{DynamicResource ThumbnailBorderBrush}"
                                     BorderThickness="1"
                                     Margin="0,0,12,0">
                                 <Image Source="{Binding Preview}"
@@ -164,14 +164,14 @@
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="{Binding DisplayName}"
                                            FontWeight="SemiBold"
-                                           Foreground="{StaticResource TextBrush}"
+                                           Foreground="{DynamicResource TextBrush}"
                                            TextWrapping="Wrap" />
                                 <TextBlock Text="{Binding PageLabel}"
                                            Margin="0,4,0,0"
-                                           Foreground="{StaticResource MutedTextBrush}" />
+                                           Foreground="{DynamicResource MutedTextBrush}" />
                                 <TextBlock Text="{Binding SourceLabel}"
                                            Margin="0,2,0,0"
-                                           Foreground="{StaticResource MutedTextBrush}"
+                                           Foreground="{DynamicResource MutedTextBrush}"
                                            FontSize="11" />
                             </StackPanel>
                         </DockPanel>
@@ -179,7 +179,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <Border Background="#66F7F3EE"
+            <Border Background="{DynamicResource OverlayBrush}"
                     CornerRadius="16"
                     Padding="24"
                     Visibility="{Binding ShowEmptyState, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -188,7 +188,7 @@
                            HorizontalAlignment="Center"
                            TextWrapping="Wrap"
                            TextAlignment="Center"
-                           Foreground="{StaticResource MutedTextBrush}" />
+                           Foreground="{DynamicResource MutedTextBrush}" />
             </Border>
         </Grid>
 
@@ -261,11 +261,11 @@
         <DockPanel Grid.Row="4" Margin="0,4,0,0">
             <TextBlock Text="{Binding StatusText}"
                        TextWrapping="Wrap"
-                       Foreground="{StaticResource MutedTextBrush}"
+                       Foreground="{DynamicResource MutedTextBrush}"
                        DockPanel.Dock="Left" />
             <TextBlock Text="{Binding PageCountLabel}"
                        HorizontalAlignment="Right"
-                       Foreground="{StaticResource AccentBrushDark}" />
+                       Foreground="{DynamicResource AccentTextBrush}" />
         </DockPanel>
     </Grid>
 </Window>
