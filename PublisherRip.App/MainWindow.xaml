@@ -258,14 +258,22 @@
             </Button>
         </WrapPanel>
 
-        <DockPanel Grid.Row="4" Margin="0,4,0,0">
-            <TextBlock Text="{Binding StatusText}"
+        <!-- Grid, not DockPanel: a left-docked TextBlock is measured with the full width and
+             never wraps before the counter, so the two overlapped (#13). -->
+        <Grid Grid.Row="4" Margin="0,4,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                       Text="{Binding StatusText}"
                        TextWrapping="Wrap"
-                       Foreground="{DynamicResource MutedTextBrush}"
-                       DockPanel.Dock="Left" />
-            <TextBlock Text="{Binding PageCountLabel}"
-                       HorizontalAlignment="Right"
+                       Foreground="{DynamicResource MutedTextBrush}" />
+            <TextBlock Grid.Column="1"
+                       Text="{Binding PageCountLabel}"
+                       Margin="12,0,0,0"
+                       VerticalAlignment="Bottom"
                        Foreground="{DynamicResource AccentTextBrush}" />
-        </DockPanel>
+        </Grid>
     </Grid>
 </Window>
