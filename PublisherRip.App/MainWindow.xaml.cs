@@ -3,6 +3,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using PublisherRip.App.Models;
 using PublisherRip.App.Services;
 
@@ -20,7 +22,19 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         InitializeComponent();
         Pages.CollectionChanged += PagesCollectionChanged;
         RefreshUiState();
+
+        _installOptionsService = InstallOptionsService.TryCreateForInstalledApp();
+        if (_installOptionsService is null)
+        {
+            InstallOptionsMenuItem.IsEnabled = false;
+            InstallOptionsMenuItem.ToolTip = "Available once Publisher RIP is installed.";
+            ToolTipService.SetShowOnDisabled(InstallOptionsMenuItem, true);
+        }
+
+        ContentRendered += HandleFirstContentRendered;
     }
+
+    private readonly InstallOptionsService? _installOptionsService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -278,6 +292,69 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         finally
         {
             IsBusy = false;
+        }
+    }
+
+    private void HandleFirstContentRendered(object? sender, EventArgs e)
+    {
+        ContentRendered -= HandleFirstContentRendered;
+
+        if (!Program.IsFirstRun || _installOptionsService is null)
+        {
+            return;
+        }
+
+        // Unattended installs: honour the same env vars the old install script used.
+        var fromEnvironment = InstallOptionsService.ReadFromEnvironment();
+        if (fromEnvironment is not null)
+        {
+            ApplyInstallOptions(fromEnvironment);
+            return;
+        }
+
+        ShowInstallOptions(isFirstRun: true);
+    }
+
+    private void SettingsClicked(object sender, RoutedEventArgs e)
+    {
+        var menu = SettingsButton.ContextMenu;
+        menu.PlacementTarget = SettingsButton;
+        menu.Placement = PlacementMode.Bottom;
+        menu.IsOpen = true;
+    }
+
+    private void InstallOptionsClicked(object sender, RoutedEventArgs e) => ShowInstallOptions(isFirstRun: false);
+
+    private void ShowInstallOptions(bool isFirstRun)
+    {
+        if (_installOptionsService is null)
+        {
+            return;
+        }
+
+        var current = isFirstRun ? InstallOptions.None : _installOptionsService.GetCurrent();
+        var dialog = new InstallOptionsWindow(current, isFirstRun) { Owner = this };
+        if (dialog.ShowDialog() == true && dialog.Result is not null)
+        {
+            ApplyInstallOptions(dialog.Result);
+        }
+    }
+
+    private void ApplyInstallOptions(InstallOptions options)
+    {
+        try
+        {
+            _installOptionsService!.Apply(options);
+            StatusText = "Saved your shortcut and launcher choices.";
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                this,
+                $"I couldn't update the shortcuts or command-line launcher.\n\n{ex.Message}",
+                "Setup failed",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
     }
 

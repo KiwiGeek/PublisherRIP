@@ -1,0 +1,66 @@
+<Window x:Class="PublisherRip.App.InstallOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Publisher RIP setup"
+        Icon="Assets/PublisherRip.ico"
+        Width="400"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource WindowBackgroundBrush}">
+    <Window.Resources>
+        <Style TargetType="CheckBox">
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="16">
+        <Border Background="{StaticResource PanelBrush}"
+                BorderBrush="{StaticResource BorderBrushStrong}"
+                BorderThickness="1"
+                CornerRadius="18"
+                Padding="16"
+                Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock x:Name="HeadingText"
+                           Text="Set up Publisher RIP"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="{StaticResource TextBrush}" />
+                <TextBlock x:Name="IntroText"
+                           Margin="0,6,0,16"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource MutedTextBrush}"
+                           Text="Choose how you'd like to launch Publisher RIP. You can change these later from the settings button." />
+
+                <CheckBox x:Name="DesktopShortcutCheckBox">
+                    <TextBlock Text="Desktop shortcut" FontWeight="SemiBold" />
+                </CheckBox>
+                <CheckBox x:Name="StartMenuShortcutCheckBox">
+                    <TextBlock Text="Start Menu shortcut" FontWeight="SemiBold" />
+                </CheckBox>
+                <CheckBox x:Name="CommandLineLauncherCheckBox" Margin="0">
+                    <StackPanel>
+                        <TextBlock FontWeight="SemiBold">
+                            <Run Text="Command-line launcher (" /><Run Text="publisherrip" FontFamily="Consolas" /><Run Text=")" />
+                        </TextBlock>
+                        <TextBlock Text="Adds a command to your PATH. Open a new terminal to use it."
+                                   Margin="0,2,0,0"
+                                   TextWrapping="Wrap"
+                                   FontSize="11"
+                                   Foreground="{StaticResource MutedTextBrush}" />
+                    </StackPanel>
+                </CheckBox>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="CancelButton" Content="Cancel" IsCancel="True" Click="CancelClicked" />
+            <Button Content="Save" IsDefault="True" Style="{StaticResource AccentButtonStyle}" Margin="0,0,0,8" Click="SaveClicked" />
+        </StackPanel>
+    </StackPanel>
+</Window>
