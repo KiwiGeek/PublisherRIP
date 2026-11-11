@@ -402,7 +402,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             return;
         }
 
-        var current = isFirstRun ? InstallOptions.None : _installOptionsService.GetCurrent();
+        var current = isFirstRun ? InstallOptions.FirstRunDefaults : _installOptionsService.GetCurrent();
         var dialog = new InstallOptionsWindow(current, isFirstRun) { Owner = this };
         if (dialog.ShowDialog() == true && dialog.Result is not null)
         {

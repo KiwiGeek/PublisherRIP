@@ -13,6 +13,9 @@ namespace PublisherRip.App.Services;
 public sealed record InstallOptions(bool DesktopShortcut, bool StartMenuShortcut, bool CommandLineLauncher)
 {
     public static InstallOptions None { get; } = new(false, false, false);
+
+    /// <summary>What the first-run dialog pre-selects.</summary>
+    public static InstallOptions FirstRunDefaults { get; } = new(DesktopShortcut: false, StartMenuShortcut: true, CommandLineLauncher: true);
 }
 
 /// <summary>
