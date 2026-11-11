@@ -7,10 +7,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\PublisherRip.ico</ApplicationIcon>
+    <!-- Custom entry point so Velopack can handle install/update hooks before WPF starts. -->
+    <StartupObject>PublisherRip.App.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <Resource Include="Assets\PublisherRip.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="1.2.161" />
   </ItemGroup>
 
 </Project>

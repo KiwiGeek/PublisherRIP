@@ -1,0 +1,136 @@
+name: Release
+
+# Push a tag like v1.2.3 (or v1.2.3-beta.1 for a pre-release) to build, sign and publish.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write   # create the GitHub release and upload assets
+  id-token: write   # OIDC token for Azure login (no stored secrets)
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  VPK_VERSION: 1.2.161
+  PACK_ID: PublisherRip
+  MAIN_EXE: PublisherRip.App.exe
+
+jobs:
+  release:
+    runs-on: windows-latest
+    # The Azure federated credential trusts only this environment, and the
+    # environment only accepts v* tags.
+    environment: release
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Determine version
+        id: version
+        run: |
+          $tag = '${{ github.ref_name }}'
+          $version = $tag.Substring(1)
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') {
+            throw "Tag '$tag' must look like v1.2.3 or v1.2.3-beta.1"
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "prerelease=$(if ($version.Contains('-')) { 'true' } else { 'false' })" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install vpk
+        run: dotnet tool install -g vpk --version $env:VPK_VERSION
+
+      - name: Publish app
+        run: >
+          dotnet publish PublisherRip.App/PublisherRip.App.csproj
+          -c Release -r win-x64 --self-contained
+          -p:Version=${{ steps.version.outputs.version }}
+          -o publish --nologo
+
+      # Fetches the latest existing release so vpk can build a delta update package.
+      # Fails harmlessly on the very first release.
+      - name: Download previous release
+        continue-on-error: true
+        run: >
+          vpk download github
+          --repoUrl '${{ github.server_url }}/${{ github.repository }}'
+          --token '${{ secrets.GITHUB_TOKEN }}'
+          --outputDir releases
+          ${{ steps.version.outputs.prerelease == 'true' && '--pre' || '' }}
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Write signing metadata
+        run: |
+          @{
+            Endpoint               = '${{ vars.SIGNING_ENDPOINT }}'
+            CodeSigningAccountName = '${{ vars.SIGNING_ACCOUNT }}'
+            CertificateProfileName = '${{ vars.SIGNING_PROFILE }}'
+          } | ConvertTo-Json | Set-Content -Path "$env:RUNNER_TEMP\signing.json" -Encoding utf8
+
+      - name: Pack and sign
+        run: >
+          vpk pack
+          --packId $env:PACK_ID
+          --packVersion ${{ steps.version.outputs.version }}
+          --packTitle 'Publisher RIP'
+          --packAuthors 'Joshua Penman'
+          --packDir publish
+          --mainExe $env:MAIN_EXE
+          --icon PublisherRip.App/Assets/PublisherRip.ico
+          --shortcuts ""
+          --azureTrustedSignFile "$env:RUNNER_TEMP\signing.json"
+          --outputDir releases
+
+      - name: Verify signatures
+        run: |
+          $version = '${{ steps.version.outputs.version }}'
+          $extract = Join-Path $env:RUNNER_TEMP 'pkg'
+          # .nupkg is a zip, but Expand-Archive only accepts the .zip extension.
+          $nupkg = Resolve-Path "releases\$env:PACK_ID-$version-full.nupkg"
+          [IO.Compression.ZipFile]::ExtractToDirectory($nupkg, $extract, $true)
+
+          $files = @(
+            "releases\$env:PACK_ID-win-Setup.exe"
+            Join-Path $extract "lib\app\$env:MAIN_EXE"
+            Join-Path $extract 'lib\app\PublisherRip.App.dll'
+            Join-Path $extract 'lib\app\Squirrel.exe'
+          ) + @(Get-ChildItem (Join-Path $extract 'lib\app') -Filter '*_ExecutionStub.exe' | ForEach-Object FullName)
+
+          $failed = $false
+          foreach ($file in $files) {
+            $sig = Get-AuthenticodeSignature -FilePath $file
+            $name = Split-Path $file -Leaf
+            if ($sig.Status -ne 'Valid' -or -not $sig.TimeStamperCertificate) {
+              Write-Host "::error::$name is not validly signed and timestamped (status: $($sig.Status))"
+              $failed = $true
+            } else {
+              Write-Host "$name : $($sig.SignerCertificate.Subject)"
+            }
+          }
+          if ($failed) { exit 1 }
+
+      - name: Upload release
+        run: >
+          vpk upload github
+          --repoUrl '${{ github.server_url }}/${{ github.repository }}'
+          --token '${{ secrets.GITHUB_TOKEN }}'
+          --outputDir releases
+          --tag '${{ github.ref_name }}'
+          --releaseName 'Publisher RIP ${{ steps.version.outputs.version }}'
+          --publish
+          ${{ steps.version.outputs.prerelease == 'true' && '--pre' || '' }}

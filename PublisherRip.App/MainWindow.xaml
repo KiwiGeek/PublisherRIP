@@ -11,7 +11,7 @@
         Height="640"
         MinWidth="380"
         MinHeight="460"
-        Background="#FFF7F3EE"
+        Background="{StaticResource WindowBackgroundBrush}"
         Topmost="True"
         WindowStartupLocation="CenterScreen"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -19,37 +19,6 @@
         PreviewDragOver="HandlePreviewDragOver"
         PreviewDrop="HandlePreviewDrop">
     <Window.Resources>
-        <SolidColorBrush x:Key="PanelBrush" Color="#FFFFFCF8" />
-        <SolidColorBrush x:Key="BorderBrushStrong" Color="#FFD6B48A" />
-        <SolidColorBrush x:Key="AccentBrush" Color="#FFC65D1A" />
-        <SolidColorBrush x:Key="AccentBrushDark" Color="#FF8C3B0B" />
-        <SolidColorBrush x:Key="TextBrush" Color="#FF2D2118" />
-        <SolidColorBrush x:Key="MutedTextBrush" Color="#FF6C5847" />
-
-        <Style x:Key="ActionIconStyle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0,0,7,0" />
-        </Style>
-
-        <Style TargetType="Button">
-            <Setter Property="Margin" Value="0,0,8,8" />
-            <Setter Property="Padding" Value="12,8" />
-            <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushStrong}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-        </Style>
-
-        <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrushDark}" />
-        </Style>
-
         <Style TargetType="ListBoxItem">
             <Setter Property="Margin" Value="0,0,0,8" />
             <Setter Property="Padding" Value="0" />
@@ -93,16 +62,53 @@
                 CornerRadius="18"
                 Padding="16"
                 Margin="0,0,0,12">
-            <StackPanel>
-                <TextBlock Text="Publisher RIP"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           Foreground="{StaticResource TextBrush}" />
-                <TextBlock Text="Drop images, PDFs, or Outlook attachments here. The window stays on top so you can fling pages into it fast."
-                           Margin="0,6,0,0"
-                           TextWrapping="Wrap"
-                           Foreground="{StaticResource MutedTextBrush}" />
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Publisher RIP"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextBrush}" />
+                    <TextBlock Text="Drop images, PDFs, or Outlook attachments here. The window stays on top so you can fling pages into it fast."
+                               Margin="0,6,0,0"
+                               TextWrapping="Wrap"
+                               Foreground="{StaticResource MutedTextBrush}" />
+                </StackPanel>
+                <Button x:Name="SettingsButton"
+                        Grid.Column="1"
+                        Click="SettingsClicked"
+                        Margin="8,0,0,0"
+                        Padding="6"
+                        VerticalAlignment="Top"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ToolTip="Settings"
+                        AutomationProperties.Name="Settings">
+                    <TextBlock Text="&#xE713;" Style="{StaticResource ActionIconStyle}" Margin="0" Foreground="{StaticResource MutedTextBrush}" />
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="RestartToUpdateMenuItem"
+                                      Header="Restart to update"
+                                      FontWeight="SemiBold"
+                                      Visibility="Collapsed"
+                                      Click="RestartToUpdateClicked" />
+                            <MenuItem x:Name="CheckForUpdatesMenuItem"
+                                      Header="Check for updates"
+                                      Click="CheckForUpdatesClicked" />
+                            <MenuItem x:Name="InstallOptionsMenuItem"
+                                      Header="Shortcuts and command-line launcher…"
+                                      Click="InstallOptionsClicked" />
+                            <Separator />
+                            <MenuItem x:Name="VersionMenuItem"
+                                      Header="Development build"
+                                      IsEnabled="False" />
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+            </Grid>
         </Border>
 
         <Border Grid.Row="1"
