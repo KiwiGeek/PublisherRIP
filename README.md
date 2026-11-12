@@ -12,6 +12,12 @@ irm https://raw.githubusercontent.com/KiwiGeek/PublisherRIP/master/scripts/insta
 
 The script downloads the same installer, checks its signature, and runs it.
 
+Or with [winget](https://learn.microsoft.com/windows/package-manager/winget/):
+
+```powershell
+winget install KiwiGeek.PublisherRIP
+```
+
 The installer is signed, installs just for you (no admin rights needed), and starts the app when it's done. Windows SmartScreen may show a warning for a new release until it has been downloaded enough times; choose **More info → Run anyway** if you see it.
 
 ### Shortcuts and command-line launcher
